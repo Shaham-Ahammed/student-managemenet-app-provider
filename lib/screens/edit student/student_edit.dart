@@ -11,7 +11,7 @@ import 'package:student_app_provider/screens/edit%20student/widgets/image_select
 import 'package:student_app_provider/screens/edit%20student/widgets/radio_buttons.dart';
 import 'package:student_app_provider/screens/edit%20student/widgets/text_form_fields.dart';
 
-class StudentEdit extends StatelessWidget {
+class StudentEdit extends StatefulWidget {
   final int id;
   final String name;
   final String age;
@@ -32,17 +32,24 @@ class StudentEdit extends StatelessWidget {
     phoneController = TextEditingController(text: phone);
   }
 
+  @override
+  State<StudentEdit> createState() => _StudentEditState();
+}
+
+class _StudentEditState extends State<StudentEdit> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
-  Widget build(BuildContext context) {
-    
-    Provider.of<StudentEditController>(context, listen: false)
-        .initialValues(groupValues: gender, imagePaths: image);
+  void initState() {
+     Provider.of<StudentEditController>(context, listen: false)
+        .initialValues(groupValues: widget.gender, imagePaths: widget.image);
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     StudentEditController stuEditProvider =
         Provider.of<StudentEditController>(context);
-
     return Scaffold(
       backgroundColor: Colors.cyan[100],
       appBar: appBar(),
@@ -94,7 +101,7 @@ class StudentEdit extends StatelessWidget {
                       MaterialStateProperty.all<Color>(Colors.cyan)),
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
-                  await updateData(id, stuEditProvider, context);
+                  await updateData(widget.id, stuEditProvider, context);
 
                   Navigator.of(context).pop();
                 }
