@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +17,11 @@ class StudentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      Provider.of<StudentController>(context, listen: false).onInit();
+    Provider.of<StudentController>(context, listen: false).onInit();
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 125, 233, 255),
         appBar: appBar(),
         body: Consumer<StudentController>(builder: (context, provider, _) {
-         
-         
           return provider.isLoading
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -40,24 +40,32 @@ class StudentList extends StatelessWidget {
                         const SizedBox(
                           height: 10,
                         ),
-                         SearchBox(provider: provider,),
+                        SearchBox(
+                          provider: provider,
+                        ),
                         Expanded(
                           child: ListView.builder(
                             itemCount: provider.filteredStudentList.length,
                             itemBuilder: (context, index) => GestureDetector(
-                              onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => StudentProfile(
-                                          id: provider.filteredStudentList[index].id!,
-                                          name:
-                                              provider.filteredStudentList[index].name,
-                                          age: provider.filteredStudentList[index].age,
-                                          images: provider
-                                              .filteredStudentList[index].images,
-                                          gender: provider
-                                              .filteredStudentList[index].gender,
-                                          phone: provider
-                                              .filteredStudentList[index].phone))),
+                              onTap: () async{
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  await Future.delayed(const Duration(milliseconds: 100));
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => StudentProfile(
+                                        id: provider
+                                            .filteredStudentList[index].id!,
+                                        name: provider
+                                            .filteredStudentList[index].name,
+                                        age: provider
+                                            .filteredStudentList[index].age,
+                                        images: provider
+                                            .filteredStudentList[index].images,
+                                        gender: provider
+                                            .filteredStudentList[index].gender,
+                                        phone: provider
+                                            .filteredStudentList[index]
+                                            .phone)));
+                              },
                               child: Card(
                                 color: Colors.cyan[100],
                                 margin: const EdgeInsets.all(15),
@@ -82,6 +90,6 @@ class StudentList extends StatelessWidget {
                       ],
                     );
         }),
-        floatingActionButton:  const StudentAddButton());
+        floatingActionButton: const StudentAddButton());
   }
 }
